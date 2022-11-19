@@ -1,0 +1,122 @@
+---
+title: "Project"
+output: html_document
+date: "2022-11-01"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE,
+                      error = TRUE)
+                
+library(tidyverse)
+library(lubridate)
+library(kableExtra)
+library(readxl)
+
+state = data.frame(state=state.abb,region=state.region)
+
+year_2003 = read_excel("FY2003_50Rents_County.xls") %>% 
+    select(state=State_Alpha,rent_03_0=rent50_0,rent_03_1=rent50_1,rent_03_2=rent50_2,rent_03_3=rent50_3,rent_03_4=rent50_4) %>% 
+  inner_join(state) %>% 
+  group_by(state, region) %>% 
+    summarize(rent_03_0 = round(mean(rent_03_0),2),rent_03_1 = round(mean(rent_03_1),2),rent_03_2 = round(mean(rent_03_2),2),rent_03_3 = round(mean(rent_03_3),2),rent_03_4 = round(mean(rent_03_4),2))
+
+year_2008=read_excel("FY2008_county_level_50th_r.xls") %>% select(state= state_alpha,rent_08_0=Rent50_0,rent_08_1=Rent50_1,rent_08_2=Rent50_2,rent_08_3=Rent50_3,rent_08_4=Rent50_4)%>%  
+  inner_join(state) %>% 
+    group_by(state, region) %>% 
+    summarize(rent_08_0 = round(mean(rent_08_0),2),rent_08_1 = round(mean(rent_08_1),2),rent_08_2 = round(mean(rent_08_2),2),rent_08_3 = round(mean(rent_08_3),2),rent_08_4 = round(mean(rent_08_4),2))
+
+year_2013=read_excel("FY2013_50_Final.xls")  %>% 
+  select(state= state_alpha,rent_13_0=Rent50_0,rent_13_1=Rent50_1,rent_13_2=Rent50_2,rent_13_3=Rent50_3,rent_13_4=Rent50_4)%>%  
+  inner_join(state) %>% 
+    group_by(state, region) %>% 
+    summarize(rent_13_0 = round(mean(rent_13_0),2),rent_13_1 = round(mean(rent_13_1),2),rent_13_2 = round(mean(rent_13_2),2),rent_13_3 = round(mean(rent_13_3),2),rent_13_4 = round(mean(rent_13_4),2))
+
+year_2018=read_excel("FY2018_50_County_rev.xlsx") %>% 
+  select(state = state_alpha,rent_18_0=rent50_0,rent_18_1=rent50_1,rent_18_2=rent50_2,rent_18_3=rent50_3,rent_18_4=rent50_4)%>%  
+  inner_join(state) %>% 
+    group_by(state, region) %>% 
+    summarize(rent_18_0 = round(mean(rent_18_0),2),rent_18_1 = round(mean(rent_18_1),2),rent_18_2 = round(mean(rent_18_2),2),rent_18_3 = round(mean(rent_18_3),2),rent_18_4 = round(mean(rent_18_4),2))
+
+year_2023=read_excel("FY2023_FMR_50_county.xlsx") %>% 
+  select(state= state_alpha, rent_23_0=rent_50_0, rent_23_1=rent_50_1, rent_23_2=rent_50_2, rent_23_3=rent_50_3, rent_23_4=rent_50_4)%>%  
+  inner_join(state) %>% 
+    group_by(state,region) %>% 
+    summarize(rent_23_0 = round(mean(rent_23_0),2),rent_23_1 = round(mean(rent_23_1),2),rent_23_2 = round(mean(rent_23_2),2),rent_23_3 = round(mean(rent_23_3),2),rent_23_4 = round(mean(rent_23_4),2))
+
+years_all = year_2023 %>%  inner_join(year_2018) %>% inner_join(year_2013) %>% inner_join(year_2008) %>% inner_join(year_2003)
+
+years_0 = years_all %>% select(state,region,rent_23_0,rent_18_0,rent_13_0,rent_08_0,rent_03_0)
+
+years_1 = years_all %>% select(state,region,rent_23_1,rent_18_1,rent_13_1,rent_08_1,rent_03_1)
+
+years_2 = years_all %>% select(state,region,rent_23_2,rent_18_2,rent_13_2,rent_08_2,rent_03_2)
+
+years_3 = years_all %>% select(state,region,rent_23_3,rent_18_3,rent_13_3,rent_08_3,rent_03_3)
+
+years_4 = years_all %>% select(state,region,rent_23_4,rent_18_4,rent_13_4,rent_08_4,rent_03_4)
+```
+
+## R Markdown
+
+
+```{r}
+dim(year_2003)
+dim(year_2008)
+dim(year_2013)
+dim(year_2018)
+dim(year_2023)
+dim(years_all)
+dim(years_0)
+dim(years_1)
+dim(years_2)
+dim(years_3)
+dim(years_4)
+```
+
+```{r}
+library(ggplot2)
+ggplot(year_2003, aes(x = state, y = rent_03_0)) +
+  geom_point(size = 3, color = "red") + 
+  geom_segment(aes(x = state, xend = state, y = 0, yend = rent_03_0)) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5)) # Rotate axis label
+
+library(maps)
+library(ggplot2)
+year_2003$region <- tolower(state.name)  
+states <- map_data("state")     
+map <- merge(states, year_2003, by = "region", all.x = T)  
+map_03_01 <- map[order(map$order), ]     # Must order first
+ggplot(map_03_01, aes(x = long, y = lat, group = group)) +  
+    geom_polygon(aes(fill = rent_03_0)) +   
+    geom_path() + 
+    scale_fill_gradientn(colours = rev(heat.colors(10))) +
+    coord_map() +
+    labs(x = "Longitude", y = "Latitude", 
+         title = "Rent Prices by State", 
+         subtitle = "1 Bedroom in 2003") +
+    guides(fill = guide_legend(title = "Rent Price")) 
+
+library(ggridges)
+ggplot(year_2008, aes(x = rent_08_1, y = region, fill = region)) +
+    geom_density_ridges() +
+    theme_ridges() +                              
+    theme(legend.position = "none",                  
+          axis.title.x = element_text(hjust = 0.5),  
+          axis.title.y = element_text(hjust = 0.5)) + 
+    labs(x = "Rent Price", y = "Region",  
+         title = "Rent Prices by Region", subtitle = "1 Bedroom in 2008") 
+
+ggplot(year_2008, aes(x = rent_08_1, fill = region)) + 
+  geom_density(alpha = 0.3)+ 
+    labs(x = "Rent Price", y = "Density",  
+         title = "Rent Prices by Region", subtitle = "1 Bedroom in 2008") +
+    guides(fill = guide_legend(title = "Region")) 
+
+ggplot(year_2008, aes(x = region, y = rent_08_1, fill = region)) + 
+    geom_violin(trim = FALSE) + 
+    geom_boxplot(width = 0.1)+ 
+    labs(x = "Region", y = "Rent Price",  
+         title = "Rent Prices by Region", subtitle = "1 Bedroom in 2008") +
+    guides(fill = guide_legend(title = "Region")) 
+```
