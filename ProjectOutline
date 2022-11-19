@@ -1,1 +1,32 @@
 //Source of Data: https://www.huduser.gov/portal/datasets/50per.html#2018 This is the 50th Percentile Rent Estimate Data collected by the Office of Policy Department and Research. We are interested in this data because we want to measure how the average rent cost over the various regions of the US have changed over time, by analyzing the rent price over a period of years: 2003,2008,2013,2018 and 2023. The data includes the rent price for numerous counties across the US, and the data was grouped by state by averaging the rent price of all counties in the state and obtaining one value for the 50th percentile rent estimate for each state. This data was again grouped by region where it will be graphed and the highest and lowest regions for rent will be analyzed and percent change of rent price across each region from one 5 year period to another can be determined. In short, our main question is: What region of the US has the highest rent? And has this always been the highest rent region for the entire decade, and if not, how did changes in the other regions lead to displacing the most expensive region for rent?
+The data was read in and the average rent prices of all the counties available for each state were averaged to come up with an average 50th percentile rent estimate for each state. Our variables were: rent price, and region. Rent price includes the rent price for 3 bedroom households or apartments specifically, since the data was filtered to only include the 50th percentile rent price estimate for 3 bedroom enclosures (instead of 0-4 bedroom enclosures). Some plots that may be included include: a map graph of the United States, grouped by region instead of state like is shown here. The second plot to be included would be the ggridges density plot in a stacked format for each of the five years to have a visual depiction of the change over time for each region. The last graph depicted would be a stacked box plot for each region, showing 5 box plots for the 5 different years and 1 region in one graph for another visual depiction per region, this time. The basic code for the map and the density graph is included.
+
+```{r}
+library(maps)
+library(ggplot2)
+year_2003$region <- tolower(state.name)  
+states <- map_data("state")     
+map <- merge(states, year_2003, by = "region", all.x = T)  
+map_03 <- map[order(map$order), ]     
+ggplot(map_03, aes(x = long, y = lat, group = group)) +  
+    geom_polygon(aes(fill = rent_03)) +   
+    geom_path() + 
+    scale_fill_gradientn(colours = rev(heat.colors(10))) +
+    coord_map() +
+    labs(x = "Longitude", y = "Latitude", 
+         title = "Rent Prices by State", 
+         subtitle = "3 Bedroom in 2003") +
+    guides(fill = guide_legend(title = "Rent Price")) 
+ ```
+ 
+ ```{r}
+ library(ggridges)
+ggplot(year_2008, aes(x = rent_08, y = region, fill = region)) +
+    geom_density_ridges() +
+    theme_ridges() +                              
+    theme(legend.position = "none",                  
+          axis.title.x = element_text(hjust = 0.5),  
+          axis.title.y = element_text(hjust = 0.5)) + 
+    labs(x = "Rent Price", y = "Region",  
+         title = "Rent Prices by Region", subtitle = "3 Bedroom in 2008") 
+  ```
