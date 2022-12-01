@@ -19,32 +19,42 @@ year_2003 = read_excel("FY2003_50Rents_County.xls") %>%
     select(state=State_Alpha,rent_03=rent50_3) %>% 
   inner_join(state) %>% 
   group_by(state, region) %>% 
-    summarize(rent_03 = round(mean(rent_03),2))
+    summarize(rent_03 = round(mean(rent_03),2)) %>% 
+  mutate(year_03="2003")
 
 year_2008=read_excel("FY2008_county_level_50th_r.xls") %>% select(state= state_alpha,rent_08=Rent50_3)%>%  
   inner_join(state) %>% 
     group_by(state, region) %>% 
-    summarize(rent_08 = round(mean(rent_08),2))
+    summarize(rent_08 = round(mean(rent_08),2))%>% 
+  mutate(year_08="2008")
 
 year_2013=read_excel("FY2013_50_Final.xls")  %>% 
   select(state= state_alpha,rent_13=Rent50_3)%>%  
   inner_join(state) %>% 
     group_by(state, region) %>% 
-    summarize(rent_13 = round(mean(rent_13),2))
+    summarize(rent_13 = round(mean(rent_13),2))%>% 
+  mutate(year_13="2013")
 
 year_2018=read_excel("FY2018_50_County_rev.xlsx") %>% 
   select(state = state_alpha, rent_18=rent50_3)%>%  
   inner_join(state) %>% 
     group_by(state, region) %>% 
-    summarize(rent_18 = round(mean(rent_18),2))
+    summarize(rent_18 = round(mean(rent_18),2))%>% 
+  mutate(year_18="2018")
 
 year_2023=read_excel("FY2023_FMR_50_county.xlsx") %>% 
   select(state= state_alpha, rent_23=rent_50_3)%>%  
   inner_join(state) %>% 
     group_by(state,region) %>% 
-    summarize(rent_23 = round(mean(rent_23),2))
+    summarize(rent_23 = round(mean(rent_23),2))%>% 
+  mutate(year_23="2023")
 
-years = year_2023 %>%  inner_join(year_2018) %>% inner_join(year_2013) %>% inner_join(year_2008) %>% inner_join(year_2003)
+years = year_2023 %>%  full_join(year_2018) %>% full_join(year_2013) %>% full_join(year_2008) %>% full_join(year_2003) %>% 
+  select(state, region , y2023 = rent_23, y2018 = rent_18, y2013 = rent_13, y2008 = rent_08, y2003 = rent_03) %>% 
+    pivot_longer(
+        cols = starts_with("y"),
+        names_to = "year",
+        values_to = "rent",)
 ```
 
 ## R Markdown
@@ -68,14 +78,14 @@ ggplot(year_2003, aes(x = state, y = rent_03)) +
 
 library(maps)
 library(ggplot2)
-year_2003$region <- tolower(state.name)  
-states <- map_data("state")     
-map <- merge(states, year_2003, by = "region", all.x = T)  
-map_03 <- map[order(map$order), ]     
+year_2003$state_name = tolower(state.name)  
+states = map_data("state") %>% mutate(state_name = region)    
+map = merge(states, year_2003, by = "state_name", all.x = T)  
+map_03 = map[order(map$order), ]     
 ggplot(map_03, aes(x = long, y = lat, group = group)) +  
     geom_polygon(aes(fill = rent_03)) +   
     geom_path() + 
-    scale_fill_gradientn(colours = rev(heat.colors(10))) +
+    scale_fill_gradientn(colors = rev(heat.colors(10))) +
     coord_map() +
     labs(x = "Longitude", y = "Latitude", 
          title = "Rent Prices by State", 
@@ -83,25 +93,33 @@ ggplot(map_03, aes(x = long, y = lat, group = group)) +
     guides(fill = guide_legend(title = "Rent Price")) 
 
 library(ggridges)
-ggplot(year_2008, aes(x = rent_08, y = region, fill = region)) +
+ggplot(year_2003, aes(x = rent_03, y = region, fill = region)) +
     geom_density_ridges() +
     theme_ridges() +                              
     theme(legend.position = "none",                  
           axis.title.x = element_text(hjust = 0.5),  
           axis.title.y = element_text(hjust = 0.5)) + 
     labs(x = "Rent Price", y = "Region",  
-         title = "Rent Prices by Region", subtitle = "3 Bedroom in 2008") 
+         title = "Rent Prices by Region", subtitle = "3 Bedroom in 2003") 
 
-ggplot(year_2008, aes(x = rent_08, fill = region)) + 
+ggplot(year_2003, aes(x = rent_03, fill = region)) + 
   geom_density(alpha = 0.3)+ 
     labs(x = "Rent Price", y = "Density",  
-         title = "Rent Prices by Region", subtitle = "3 Bedroom in 2008") +
+         title = "Rent Prices by Region", subtitle = "3 Bedroom in 2003") +
     guides(fill = guide_legend(title = "Region")) 
 
-ggplot(year_2008, aes(x = region, y = rent_08, fill = region)) + 
+ggplot(year_2003, aes(x = region, y = rent_03, fill = region)) + 
     geom_violin(trim = FALSE) + 
     geom_boxplot(width = 0.1)+ 
     labs(x = "Region", y = "Rent Price",  
-         title = "Rent Prices by Region", subtitle = "3 Bedroom in 2008") +
+         title = "Rent Prices by Region", subtitle = "3 Bedroom in 2003") +
     guides(fill = guide_legend(title = "Region")) 
+
+ggplot(year_2003,aes(rent_03)) + geom_boxplot() + facet_grid("region")
+
+ggplot(years,aes(rent)) + geom_boxplot() + facet_grid("year")
+
+ggplot(years,aes(rent,region)) + geom_boxplot() + facet_grid("year")
+
+ggplot(years,aes(rent,year)) + geom_boxplot() + facet_grid("region")
 ```
