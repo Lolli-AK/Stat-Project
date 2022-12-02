@@ -216,25 +216,25 @@ library(ggplot2)
 us.map <-  map_data('state')
 # add PADD zones
 us.map$PADD[us.map$region %in% 
-          c("alabama","arkansas","delaware","florida","georgia","kentucky",'louisiana','maryland','mississippi','north carolina', 'oklahoma', 'south carolina', 'tennessee', 'texas', 'virginia','west virginia')] <- "PADD 1: South"
+          c("alabama","arkansas","delaware","florida","georgia","kentucky",'louisiana','maryland','mississippi','north carolina', 'oklahoma', 'south carolina', 'tennessee', 'texas', 'virginia','west virginia')] <- "South"
 us.map$PADD[us.map$region %in% 
-          c('alaska','arizona','california','colorado','hawaii','idaho','montana','nevada','new mexico','oregon','utah','washington','wyoming')] <- "PADD 2: West"
+          c('alaska','arizona','california','colorado','hawaii','idaho','montana','nevada','new mexico','oregon','utah','washington','wyoming')] <- "West"
 us.map$PADD[us.map$region %in% 
-          c('connecticut','maine','massachusetts','new hampshire','new jersey','new york', 'pennsylvania','rhode island','vermont')] <- "PADD 3: Northeast"
+          c('connecticut','maine','massachusetts','new hampshire','new jersey','new york', 'pennsylvania','rhode island','vermont')] <- "Northeast"
 us.map$PADD[us.map$region %in% 
-          c('illinois','indiana','iowa','kansas','michigan','missouri','nebraska','north dakota','ohio','south dakota','wisconsin', 'minnesota')] <- "PADD 4: North Central"
+          c('illinois','indiana','iowa','kansas','michigan','missouri','nebraska','north dakota','ohio','south dakota','wisconsin', 'minnesota')] <- "North Central"
 us.map = us.map %>% 
-  filter(region != 'district of columbia')
+  filter(region != 'district of columbia') 
 # subset the dataframe by padd zones and move lat/lon accordingly
-us.map$lat.transp[us.map$PADD == "PADD 1: South"] <- us.map$lat[us.map$PADD == "PADD 1: South"] - 5
-us.map$long.transp[us.map$PADD == "PADD 1: South"] <- us.map$long[us.map$PADD == "PADD 1: South"] - 4
-us.map$lat.transp[us.map$PADD == "PADD 3: Northeast"] <- us.map$lat[us.map$PADD == "PADD 3: Northeast"] - 3
-us.map$long.transp[us.map$PADD == "PADD 3: Northeast"] <- us.map$long[us.map$PADD == "PADD 3: Northeast"]
-us.map$lat.transp[us.map$PADD == "PADD 4: North Central"] <- us.map$lat[us.map$PADD == "PADD 4: North Central"]
-us.map$long.transp[us.map$PADD == "PADD 4: North Central"] <- us.map$long[us.map$PADD == "PADD 4: North Central"] - 5
-us.map$lat.transp[us.map$PADD == "PADD 2: West"] <- us.map$lat[us.map$PADD == "PADD 2: West"] - 2
-us.map$long.transp[us.map$PADD == "PADD 2: West"] <- us.map$long[us.map$PADD == "PADD 2: West"] - 10
-
+us.map$lat.transp[us.map$PADD == "South"] <- us.map$lat[us.map$PADD == "South"] - 5
+us.map$long.transp[us.map$PADD == "South"] <- us.map$long[us.map$PADD == "South"] - 4
+us.map$lat.transp[us.map$PADD == "Northeast"] <- us.map$lat[us.map$PADD == "Northeast"] - 3
+us.map$long.transp[us.map$PADD == "Northeast"] <- us.map$long[us.map$PADD == "Northeast"]
+us.map$lat.transp[us.map$PADD == "North Central"] <- us.map$lat[us.map$PADD == "North Central"]
+us.map$long.transp[us.map$PADD == "North Central"] <- us.map$long[us.map$PADD == "North Central"] - 5
+us.map$lat.transp[us.map$PADD == "West"] <- us.map$lat[us.map$PADD == "West"] - 2
+us.map$long.transp[us.map$PADD == "West"] <- us.map$long[us.map$PADD == "West"] - 10
+colnames(us.map)[7] = 'Region'
 # add labels
 states <- aggregate(cbind(long.transp, lat.transp) ~ region, data=us.map, 
                 FUN=function(x)mean(range(x)))
@@ -245,7 +245,7 @@ states$labels <- c("AL", "AR", "AZ", "CA", "CO", "CT", "DE", "FL", "GA", "IA",
               "VT", "WA", "WI", "WV", "WY")
 # plot and use padd zone as fill
 ggplot(us.map,  aes(x=long.transp, y=lat.transp), colour="white") + 
-  geom_polygon(aes(group = group, fill=PADD)) +
+  geom_polygon(aes(group = group, fill=Region)) +
   geom_text(data=states, aes(long.transp, lat.transp, label=labels), size=3) +
   theme(panel.background = element_blank(),  # remove background
     panel.grid = element_blank(), 
@@ -253,7 +253,8 @@ ggplot(us.map,  aes(x=long.transp, y=lat.transp), colour="white") +
     axis.title = element_blank(),
     axis.ticks = element_blank(),
     axis.text = element_blank()) +
-  coord_equal() 
+  coord_equal() + 
+  scale_fill_hue(l=50, c=60 )  
 ```
 ```
 ```{r}
