@@ -1,3 +1,79 @@
+year_2003 = year_2003 %>%  full_join(state)
+states = map_data("state") %>% mutate(state_name = region)    
+map = merge(states, year_2003, by = "state_name", all.x = T)  
+map_03 = map[order(map$order), ]     
+ggplot(map_03, aes(x = long, y = lat, group = group)) +  
+    geom_polygon(aes(fill = rent_03)) +   
+    geom_path() + 
+    scale_fill_gradientn(colors = rev(heat.colors(10))) +
+    coord_map() +
+    labs(x = "Longitude", y = "Latitude", 
+         title = "Rent Prices by State", 
+         subtitle = "3 Bedrooms in 2003") +
+    guides(fill = guide_legend(title = "Rent Price")) +
+  theme_ridges()
+
+year_2008 = year_2008 %>%  full_join(state)
+states = map_data("state") %>% mutate(state_name = region)    
+map = merge(states, year_2008, by = "state_name", all.x = T)  
+map_08 = map[order(map$order), ]     
+ggplot(map_08, aes(x = long, y = lat, group = group)) +  
+    geom_polygon(aes(fill = rent_08)) +   
+    geom_path() + 
+    scale_fill_gradientn(colors = rev(heat.colors(10))) +
+    coord_map() +
+    labs(x = "Longitude", y = "Latitude", 
+         title = "Rent Prices by State", 
+         subtitle = "3 Bedrooms in 2008") +
+    guides(fill = guide_legend(title = "Rent Price")) +
+  theme_ridges()
+
+year_2013 = year_2013 %>%  full_join(state)
+states = map_data("state") %>% mutate(state_name = region)    
+map = merge(states, year_2013, by = "state_name", all.x = T)  
+map_13 = map[order(map$order), ]     
+ggplot(map_13, aes(x = long, y = lat, group = group)) +  
+    geom_polygon(aes(fill = rent_13)) +   
+    geom_path() + 
+    scale_fill_gradientn(colors = rev(heat.colors(10))) +
+    coord_map() +
+    labs(x = "Longitude", y = "Latitude", 
+         title = "Rent Prices by State", 
+         subtitle = "3 Bedrooms in 2013") +
+    guides(fill = guide_legend(title = "Rent Price")) +
+  theme_ridges()
+
+year_2018 = year_2018 %>%  full_join(state)
+states = map_data("state") %>% mutate(state_name = region)    
+map = merge(states, year_2018, by = "state_name", all.x = T)  
+map_18 = map[order(map$order), ]     
+ggplot(map_18, aes(x = long, y = lat, group = group)) +  
+    geom_polygon(aes(fill = rent_18)) +   
+    geom_path() + 
+    scale_fill_gradientn(colors = rev(heat.colors(10))) +
+    coord_map() +
+    labs(x = "Longitude", y = "Latitude", 
+         title = "Rent Prices by State", 
+         subtitle = "3 Bedrooms in 2018") +
+    guides(fill = guide_legend(title = "Rent Price")) +
+  theme_ridges()
+
+year_2023 = year_2023 %>%  full_join(state)
+states = map_data("state") %>% mutate(state_name = region)    
+map = merge(states, year_2023, by = "state_name", all.x = T)  
+map_23 = map[order(map$order), ]     
+ggplot(map_23, aes(x = long, y = lat, group = group)) +  
+    geom_polygon(aes(fill = rent_23)) +   
+    geom_path() + 
+    scale_fill_gradientn(colors = rev(heat.colors(10))) +
+    coord_map() +
+    labs(x = "Longitude", y = "Latitude", 
+         title = "Rent Prices by State", 
+         subtitle = "3 Bedrooms in 2023") +
+    guides(fill = guide_legend(title = "Rent Price")) +
+  theme_ridges()
+
+
 ---
 title: "Project"
 output: html_document
