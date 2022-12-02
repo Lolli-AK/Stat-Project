@@ -210,3 +210,62 @@ ggplot(years,aes(year, rent)) + geom_boxplot() + facet_wrap(vars(region)) +
     labs(x = "Year", y = "Rent Price",  
          title = "Rent Prices by Year and Region", subtitle = "3 Bedrooms")  
 ```
+```{r}
+library(maps)
+library(ggplot2)
+
+us.map <-  map_data('state')
+
+# add PADD zones
+us.map$PADD[us.map$region %in% 
+          c("maine", "vermont", "new hampshire", "massachusetts", "connecticut", "rhode island",
+            "new york", "pennsylvania", "new jersey", "delaware", "district of columbia", "maryland",
+            "west virginia", "virginia", "north carolina", "south carolina", "georgia", "florida")] <- "PADD 1: East Coast"
+us.map$PADD[us.map$region %in% 
+          c("south dakota", "north dakota","nebraska", "kansas", "oklahoma", 
+            "minnesota", "iowa", "missouri", "wisconsin", "illinois", "indiana",
+            "michigan", "ohio", "kentucky", "tennessee")] <- "PADD 2: Midwest"
+us.map$PADD[us.map$region %in% 
+          c("new mexico", "texas", "arkansas", "louisiana", "alabama", "mississippi")] <- "PADD 3: Gulf Coast"
+us.map$PADD[us.map$region %in% 
+          c("montana", "idaho", "wyoming", "utah", "colorado")] <- "PADD 4: Rocky Mountain"
+us.map$PADD[us.map$region %in% 
+          c("washington", "oregon", "nevada", "arizona", "california")] <- "PADD 5: West Coast"
+
+# subset the dataframe by padd zones and move lat/lon accordingly
+us.map$lat.transp[us.map$PADD == "PADD 1: East Coast"] <- us.map$lat[us.map$PADD == "PADD 1: East Coast"]
+us.map$long.transp[us.map$PADD == "PADD 1: East Coast"] <- us.map$long[us.map$PADD == "PADD 1: East Coast"] + 5
+
+us.map$lat.transp[us.map$PADD == "PADD 2: Midwest"] <- us.map$lat[us.map$PADD == "PADD 2: Midwest"]
+us.map$long.transp[us.map$PADD == "PADD 2: Midwest"] <- us.map$long[us.map$PADD == "PADD 2: Midwest"]
+
+us.map$lat.transp[us.map$PADD == "PADD 3: Gulf Coast"] <- us.map$lat[us.map$PADD == "PADD 3: Gulf Coast"] - 3
+us.map$long.transp[us.map$PADD == "PADD 3: Gulf Coast"] <- us.map$long[us.map$PADD == "PADD 3: Gulf Coast"]
+
+us.map$lat.transp[us.map$PADD == "PADD 4: Rocky Mountain"] <- us.map$lat[us.map$PADD == "PADD 4: Rocky Mountain"]
+us.map$long.transp[us.map$PADD == "PADD 4: Rocky Mountain"] <- us.map$long[us.map$PADD == "PADD 4: Rocky Mountain"] - 5
+
+us.map$lat.transp[us.map$PADD == "PADD 5: West Coast"] <- us.map$lat[us.map$PADD == "PADD 5: West Coast"] - 2
+us.map$long.transp[us.map$PADD == "PADD 5: West Coast"] <- us.map$long[us.map$PADD == "PADD 5: West Coast"] - 10
+
+# add labels
+states <- aggregate(cbind(long.transp, lat.transp) ~ region, data=us.map, 
+                FUN=function(x)mean(range(x)))
+states$labels <- c("AL", "AR", "AZ", "CA", "CO", "CT", "DE", "DC", "FL", "GA", "IA", 
+              "ID", "IL", "IN", "KS", "KY", "LA", "MA", "MD", "ME", "MI", "MN", 
+              "MO", "MS", "MT", "NC", "ND", "NE", "NH", "NJ", "NM", "NV", "NY", 
+              "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX", "UT", "VA", 
+              "VT", "WA", "WI", "WV", "WY")
+
+# plot and use padd zone as fill
+ggplot(us.map,  aes(x=long.transp, y=lat.transp), colour="white") + 
+  geom_polygon(aes(group = group, fill=PADD)) +
+  geom_text(data=states, aes(long.transp, lat.transp, label=labels), size=3) +
+  theme(panel.background = element_blank(),  # remove background
+    panel.grid = element_blank(), 
+    axis.line = element_blank(), 
+    axis.title = element_blank(),
+    axis.ticks = element_blank(),
+    axis.text = element_blank()) +
+  coord_equal()
+```
