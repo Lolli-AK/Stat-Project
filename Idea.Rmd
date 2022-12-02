@@ -83,7 +83,13 @@ ggplot(map_03, aes(x = long, y = lat, group = group)) +
          title = "Rent Prices by State", 
          subtitle = "3 Bedrooms in 2003") +
     guides(fill = guide_legend(title = "Rent Price")) +
-  theme_ridges()
+  theme_ridges() +
+  theme(panel.background = element_blank(),  
+    panel.grid = element_blank(), 
+    axis.line = element_blank(), 
+    axis.title = element_blank(),
+    axis.ticks = element_blank(),
+    axis.text = element_blank())
 
 year_2008 = year_2008 %>%  full_join(state)
 states = map_data("state") %>% mutate(state_name = region)    
@@ -98,7 +104,13 @@ ggplot(map_08, aes(x = long, y = lat, group = group)) +
          title = "Rent Prices by State", 
          subtitle = "3 Bedrooms in 2008") +
     guides(fill = guide_legend(title = "Rent Price")) +
-  theme_ridges()
+  theme_ridges() +
+  theme(panel.background = element_blank(),  
+    panel.grid = element_blank(), 
+    axis.line = element_blank(), 
+    axis.title = element_blank(),
+    axis.ticks = element_blank(),
+    axis.text = element_blank())
 
 year_2013 = year_2013 %>%  full_join(state)
 states = map_data("state") %>% mutate(state_name = region)    
@@ -113,7 +125,13 @@ ggplot(map_13, aes(x = long, y = lat, group = group)) +
          title = "Rent Prices by State", 
          subtitle = "3 Bedrooms in 2013") +
     guides(fill = guide_legend(title = "Rent Price")) +
-  theme_ridges()
+  theme_ridges() +
+  theme(panel.background = element_blank(),  
+    panel.grid = element_blank(), 
+    axis.line = element_blank(), 
+    axis.title = element_blank(),
+    axis.ticks = element_blank(),
+    axis.text = element_blank())
 
 year_2018 = year_2018 %>%  full_join(state)
 states = map_data("state") %>% mutate(state_name = region)    
@@ -128,7 +146,13 @@ ggplot(map_18, aes(x = long, y = lat, group = group)) +
          title = "Rent Prices by State", 
          subtitle = "3 Bedrooms in 2018") +
     guides(fill = guide_legend(title = "Rent Price")) +
-  theme_ridges()
+  theme_ridges() +
+  theme(panel.background = element_blank(),  
+    panel.grid = element_blank(), 
+    axis.line = element_blank(), 
+    axis.title = element_blank(),
+    axis.ticks = element_blank(),
+    axis.text = element_blank())
 
 year_2023 = year_2023 %>%  full_join(state)
 states = map_data("state") %>% mutate(state_name = region)    
@@ -143,7 +167,13 @@ ggplot(map_23, aes(x = long, y = lat, group = group)) +
          title = "Rent Prices by State", 
          subtitle = "3 Bedrooms in 2023") +
     guides(fill = guide_legend(title = "Rent Price")) +
-  theme_ridges()  
+  theme_ridges() +
+  theme(panel.background = element_blank(),  
+    panel.grid = element_blank(), 
+    axis.line = element_blank(), 
+    axis.title = element_blank(),
+    axis.ticks = element_blank(),
+    axis.text = element_blank())  
 
 ggplot(years, aes(x = rent, y = region, fill = region)) +
     geom_density_ridges() +
