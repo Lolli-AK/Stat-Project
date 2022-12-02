@@ -256,3 +256,12 @@ ggplot(us.map,  aes(x=long.transp, y=lat.transp), colour="white") +
   coord_equal() 
 ```
 ```
+```{r}
+pct_change <- function(start, final, perc = FALSE) {
+
+  x <- ((final - start) / (abs(start))) * 100 
+
+  x
+
+}
+```
