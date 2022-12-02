@@ -70,15 +70,6 @@ years[years == "rent_03"] = "2003"
 ## R Markdown
 
 ```{r}
-ggplot(years, aes(x = state, y = rent)) +
-  geom_point(size = 2, color = "red") + 
-  geom_segment(aes(x = state, xend = state, y = 0, yend = rent)) +
-  facet_grid(vars(year)) +
-  theme_minimal()+
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5)) +
-    labs(x = "State", y = "Rent Price",  
-         title = "Rent Prices by State", subtitle = "3 Bedrooms") 
-
 year_2003 = year_2003 %>%  full_join(state)
 states = map_data("state") %>% mutate(state_name = region)    
 map = merge(states, year_2003, by = "state_name", all.x = T)  
@@ -152,32 +143,7 @@ ggplot(map_23, aes(x = long, y = lat, group = group)) +
          title = "Rent Prices by State", 
          subtitle = "3 Bedrooms in 2023") +
     guides(fill = guide_legend(title = "Rent Price")) +
-  theme_ridges()
-
-
-ggplot(year_2003, aes(x = rent_03, y = region, fill = region)) +
-    geom_density_ridges() +
-    theme_ridges() +                              
-    theme(legend.position = "none",                  
-          axis.title.x = element_text(hjust = 0.5),  
-          axis.title.y = element_text(hjust = 0.5)) + 
-    labs(x = "Rent Price", y = "Region",  
-         title = "Rent Prices by Region", subtitle = "3 Bedrooms in 2003") 
-
-ggplot(year_2003, aes(x = rent_03, fill = region)) + 
-  geom_density(alpha = 0.3)+ 
-    theme_ridges()+
-    labs(x = "Rent Price", y = "Density",  
-         title = "Rent Prices by Region", subtitle = "3 Bedrooms in 2003") +
-    guides(fill = guide_legend(title = "Region"))  
-
-ggplot(year_2003, aes(x = region, y = rent_03, fill = region)) + 
-    geom_violin(trim = FALSE) + 
-    geom_boxplot(width = 0.1) + 
-    theme_ridges() +
-    labs(x = "Region", y = "Rent Price",  
-         title = "Rent Prices by Region", subtitle = "3 Bedrooms in 2003") +
-    guides(fill = guide_legend(title = "Region")) 
+  theme_ridges()  
 
 ggplot(years, aes(x = rent, y = region, fill = region)) +
     geom_density_ridges() +
@@ -188,12 +154,6 @@ ggplot(years, aes(x = rent, y = region, fill = region)) +
           axis.title.y = element_text(hjust = 0.5)) + 
     labs(x = "Rent Price", y = "Region",  
          title = "Rent Prices by Region", subtitle = "3 Bedrooms") 
-
-ggplot(year_2003, aes(region, rent_03)) + geom_boxplot() +  
-    theme_ridges() +
-    labs(x = "Region", y = "Rent Price",  
-         title = "Rent Prices by Region", subtitle = "3 Bedrooms in 2003") 
-
 
 ggplot(years,aes(year, rent)) + geom_boxplot() + 
     theme_ridges() +
@@ -211,58 +171,36 @@ ggplot(years,aes(year, rent)) + geom_boxplot() + facet_wrap(vars(region)) +
          title = "Rent Prices by Year and Region", subtitle = "3 Bedrooms")  
 ```
 ```{r}
-library(maps)
-library(ggplot2)
-us.map <-  map_data('state')
-# add PADD zones
-us.map$PADD[us.map$region %in% 
-          c("alabama","arkansas","delaware","florida","georgia","kentucky",'louisiana','maryland','mississippi','north carolina', 'oklahoma', 'south carolina', 'tennessee', 'texas', 'virginia','west virginia')] <- "South"
-us.map$PADD[us.map$region %in% 
-          c('alaska','arizona','california','colorado','hawaii','idaho','montana','nevada','new mexico','oregon','utah','washington','wyoming')] <- "West"
-us.map$PADD[us.map$region %in% 
-          c('connecticut','maine','massachusetts','new hampshire','new jersey','new york', 'pennsylvania','rhode island','vermont')] <- "Northeast"
-us.map$PADD[us.map$region %in% 
-          c('illinois','indiana','iowa','kansas','michigan','missouri','nebraska','north dakota','ohio','south dakota','wisconsin', 'minnesota')] <- "North Central"
-us.map = us.map %>% 
-  filter(region != 'district of columbia') 
-# subset the dataframe by padd zones and move lat/lon accordingly
-us.map$lat.transp[us.map$PADD == "South"] <- us.map$lat[us.map$PADD == "South"] - 5
-us.map$long.transp[us.map$PADD == "South"] <- us.map$long[us.map$PADD == "South"] - 4
-us.map$lat.transp[us.map$PADD == "Northeast"] <- us.map$lat[us.map$PADD == "Northeast"] - 3
-us.map$long.transp[us.map$PADD == "Northeast"] <- us.map$long[us.map$PADD == "Northeast"]
-us.map$lat.transp[us.map$PADD == "North Central"] <- us.map$lat[us.map$PADD == "North Central"]
-us.map$long.transp[us.map$PADD == "North Central"] <- us.map$long[us.map$PADD == "North Central"] - 5
-us.map$lat.transp[us.map$PADD == "West"] <- us.map$lat[us.map$PADD == "West"] - 2
-us.map$long.transp[us.map$PADD == "West"] <- us.map$long[us.map$PADD == "West"] - 10
-colnames(us.map)[7] = 'Region'
-# add labels
-states <- aggregate(cbind(long.transp, lat.transp) ~ region, data=us.map, 
+us.map = map_data('state')
+
+us.map$Region[us.map$region %in% 
+                c("alabama","arkansas","delaware","florida","georgia","kentucky",'louisiana','maryland','mississippi','north carolina', 'oklahoma', 'south carolina', 'tennessee', 'texas', 'virginia','west virginia')] = "South"
+us.map$Region[us.map$region %in% 
+          c('alaska','arizona','california','colorado','hawaii','idaho','montana','nevada','new mexico','oregon','utah','washington','wyoming')] = "West"
+us.map$Region[us.map$region %in% 
+          c('connecticut','maine','massachusetts','new hampshire','new jersey','new york', 'pennsylvania','rhode island','vermont','district of columbia')] = "Northeast"
+us.map$Region[us.map$region %in% 
+          c('illinois','indiana','iowa','kansas','michigan','missouri','nebraska','north dakota','ohio','south dakota','wisconsin', 'minnesota')] = "North Central"
+
+
+us.map$lat.transp[us.map$Region == 'South'] = us.map$lat[us.map$Region == 'South'] 
+us.map$long.transp[us.map$Region == 'South'] = us.map$long[us.map$Region == 'South'] 
+us.map$lat.transp[us.map$Region == 'Northeast'] = us.map$lat[us.map$Region == 'Northeast'] 
+us.map$long.transp[us.map$Region == 'Northeast'] = us.map$long[us.map$Region == 'Northeast']
+us.map$lat.transp[us.map$Region == 'North Central'] = us.map$lat[us.map$Region == 'North Central']
+us.map$long.transp[us.map$Region== 'North Central'] = us.map$long[us.map$Region == 'North Central'] 
+us.map$lat.transp[us.map$Region == 'West'] = us.map$lat[us.map$Region == 'West'] us.map$long.transp[us.map$Region == 'West'] = us.map$long[us.map$Region == 'West'] 
+
+states = aggregate(cbind(long.transp, lat.transp) ~ region, data=us.map, 
                 FUN=function(x)mean(range(x)))
-states$labels <- c("AL", "AR", "AZ", "CA", "CO", "CT", "DE", "FL", "GA", "IA", 
-              "ID", "IL", "IN", "KS", "KY", "LA", "MA", "MD", "ME", "MI", "MN", 
-              "MO", "MS", "MT", "NC", "ND", "NE", "NH", "NJ", "NM", "NV", "NY", 
-              "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX", "UT", "VA", 
-              "VT", "WA", "WI", "WV", "WY")
-# plot and use padd zone as fill
-ggplot(us.map,  aes(x=long.transp, y=lat.transp), colour="white") + 
-  geom_polygon(aes(group = group, fill=Region)) +
-  geom_text(data=states, aes(long.transp, lat.transp, label=labels), size=3) +
-  theme(panel.background = element_blank(),  # remove background
+
+ggplot(us.map,  aes(x=long.transp, y=lat.transp)) + 
+  geom_polygon(aes(group = group, fill=Region),color = 'black')  +
+  theme(panel.background = element_blank(),  
     panel.grid = element_blank(), 
     axis.line = element_blank(), 
     axis.title = element_blank(),
     axis.ticks = element_blank(),
-    axis.text = element_blank()) +
-  coord_equal() + 
-  scale_fill_hue(l=50, c=60 )  
-```
-```
-```{r}
-pct_change <- function(start, final, perc = FALSE) {
-
-  x <- ((final - start) / (abs(start))) * 100 
-
-  x
-
-}
+    axis.text = element_blank())+
+  coord_equal() 
 ```
