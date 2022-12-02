@@ -235,5 +235,5 @@ ggplot(us.map,  aes(x=long.transp, y=lat.transp)) +
     axis.title = element_blank(),
     axis.ticks = element_blank(),
     axis.text = element_blank())+
-  coord_equal() 
+  coord_map() 
 ```
