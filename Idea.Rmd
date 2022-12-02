@@ -212,20 +212,10 @@ us.map$Region[us.map$region %in%
 us.map$Region[us.map$region %in% 
           c('illinois','indiana','iowa','kansas','michigan','missouri','nebraska','north dakota','ohio','south dakota','wisconsin', 'minnesota')] = "North Central"
 
-
-us.map$lat.transp[us.map$Region == 'South'] = us.map$lat[us.map$Region == 'South'] 
-us.map$long.transp[us.map$Region == 'South'] = us.map$long[us.map$Region == 'South'] 
-us.map$lat.transp[us.map$Region == 'Northeast'] = us.map$lat[us.map$Region == 'Northeast'] 
-us.map$long.transp[us.map$Region == 'Northeast'] = us.map$long[us.map$Region == 'Northeast']
-us.map$lat.transp[us.map$Region == 'North Central'] = us.map$lat[us.map$Region == 'North Central']
-us.map$long.transp[us.map$Region== 'North Central'] = us.map$long[us.map$Region == 'North Central'] 
-us.map$lat.transp[us.map$Region == 'West'] = us.map$lat[us.map$Region == 'West'] 
-us.map$long.transp[us.map$Region == 'West'] = us.map$long[us.map$Region == 'West']
-
-states = aggregate(cbind(long.transp, lat.transp) ~ region, data=us.map, 
+states = aggregate(cbind(long, lat) ~ region, data=us.map, 
                 FUN=function(x)mean(range(x)))
 
-ggplot(us.map,  aes(x=long.transp, y=lat.transp)) + 
+ggplot(us.map,  aes(x=long, y=lat)) + 
   geom_polygon(aes(group = group, fill=Region),color = 'black')  +
   theme_ridges() +
   ggtitle("US Regions") +
